@@ -80,8 +80,88 @@ Looking at the time series the reason for the crosscorrelation with $K\le0.5$ is
 Keeping in mind that the so processed timeseries are quite short, one must consider analyzing larger series of ecg signals.
 
 ## Fourier analysis
+The signals were fourier transformed. The fourier transformation of $E1$ is shown below.
+By this the signale could be represented by sinusoids - which is also shown below.
+
+![Fourier transormation of E1](src/fourier_1.png)
+
+![Fourier transormation of E1](src/fourier_2.png)
 
 ## Fitting each channel
-(problems why we need fourier)
+For the sake of reconstructing a 1D timeseries (aka receving a model which outputs the same, or at least a quite similat, timeseries, which was used to reconstruct the system), a least square fit methid was used to fit each provided timeseries idividually to a nonlinear system. A resulting oscillating system was expected.
+
+### The method described
+The ECG time series $y$ shall be represented by a set of differential equations. We achieve that by fitting $y$ to functions $f$:
+
+$$
+\dot{y} = f_1(y, \dot{y})\\
+\ddot{y} = f_2(y, \dot{y})
+$$
+
+From the initial time series $y$, $\dot{y}$ and $\ddot{y}$ were calculated numerically using a five point derivate. Using the mentioned least square fit method, $f_1$ and $f_2$ were be derived. If the ansatz of the nonlinear oscillator is true, the first component, $f_1$ should be linear.
+
+With $n$ dimensions. We want to find a function $f$ to fit the series depending on a vector $\vec{p}$. We choose $f(y_i,\dot{y}_i;\vec{p})=p_0\cdot y+p_1 \cdot \dot{y} + p_2 \cdot y^2 + p_3 \cdot y \cdot \dot{y} + p_4 \cdot \dot{y}^2$ where the dataset $\{y, \dot{y}\}$ is the one we want $f$ to be fitted to.
+
+$$
+\frac{1}{n} \sum_i^n(f(y_i,\dot{y}_i;\vec{p})-z_i)^2 = Min.
+$$
+
+Which is equivalent to:
+
+$$
+\frac{\partial}{\partial p_k}\sum_i^n(f(y_i,\dot{y}_i;\vec{p})-z_i)^2=\sum_i^n(f(y_i,\dot{y}_i;\vec{p})-z_i)\frac{\partial}{\partial p_k}f(y_i,\dot{y}_i;\vec{p})=0
+$$
+
+Which yields a system of equations. Written in $A\cdot p=b$:
+
+$$
+\begin{pmatrix}
+\sum_i^n y_i^2 & \sum_i^n y_i \dot{y}_i & \sum_i^n y_i^3 & \sum_i^n y_i^2 \dot{y}_i & \sum_i^n y_i \dot{y}_i^2 \\
+\sum_i^n y_i \dot{y}_i & \sum_i^n \dot{y}_i^2 & \sum_i^n y_i^2 \dot{y}_i & \sum_i^n y_i \dot{y}_i^2 & \sum_i^n \dot{y}_i^3 \\
+\sum_i^n y_i^3 & \sum_i^n y_i^2 \dot{y}_i & \sum_i^n y_i^4 & \sum_i^n y_i^3 \dot{y}_i & \sum_i^n y_i^2 \dot{y}_i^2 \\
+\sum_i^n y_i^2 \dot{y}_i & \sum_i^n y_i \dot{y}_i^2 & \sum_i^n y_i^3 \dot{y}_i & \sum_i^n y_i^2 \dot{y}_i^2 & \sum_i^n y_i \dot{y}_i^3 \\
+\sum_i^n y_i \dot{y}_i^2 & \sum_i^n \dot{y}_i^3 & \sum_i^n y_i^2 \dot{y}_i^2 & \sum_i^n y_i \dot{y}_i^3 & \sum_i^n y_i \dot{y}_i^4 \\
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+p_0 \\
+p_1 \\
+p_2 \\
+p_3 \\
+p_4 \\
+\end{pmatrix}
+=
+\begin{pmatrix}
+\sum_i^n z_i y_i \\
+\sum_i^n z_i \dot{y}_i \\
+\sum_i^n z_i y_i^2 \\
+\sum_i^n z_i y_i \dot{y}_i \\
+\sum_i^n z_i \dot{y_i}^2 \\
+\end{pmatrix}
+$$
+
+Solving for $\vec{p}$ yields:
+
+$$
+\vec{p} = A^{-1} \cdot b
+$$
+
+where $A^{-1}_{ij} = \frac{\alpha_{ij}}{|A|}$ and $\alpha_{ij}$ are the elements of the adjoint matrix $A_{ad}$.
+
+The method was implemented with variable grade.
+
+### Results for $f_2$ visualized
+In the below figure the results for a fit to $f_2$ is visualized. A grade eight polynominal was used. The fit was done for all nine channels of each set (measured, simulated data).
+
+![Fit to f_2 for different channels](src/fit_1.png)
+
+### Problems occured while solving the resulting ODE
+Unexpectedly while solving the reconstructed ODE system, the resulting timeseries did converge to infinity. Even when trying out even higher polynominal grades, the result would still be incorrect.
+
+An ansatz to solve the occured problem was to set for $f(y_i,\dot{y}_i;\vec{p})$ the first coefficient $p_0=\frac{2\pi}{T}$, resulting into:
+
+$f(y_i,\dot{y}_i;\vec{p})=\frac{2\pi}{T}\cdot y+p_1 \cdot \dot{y} + p_2 \cdot y^2 + p_3 \cdot y \cdot \dot{y} + p_4 \cdot \dot{y}^2$
+
+Hoping this would force the resulting timeseries onto a periodical trajectory.
 
 ## Stochastic analysis: Kramers-Moyal coefficient estimation
