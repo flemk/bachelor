@@ -12,7 +12,7 @@ We received measured and simulated ecg timeseries by Robin Moss. These timeserie
 
 ECG timeseries are generated at multiple points on the skin. In our case we do have nine points, resulting in a 9D-system. The points where measurements are taken off the skin are shown in the figure below.
 
-![Taking multiple measurements off multiple points on the skin](./src/ElectrodePositions.png))
+![Taking multiple measurements off multiple points on the skin](./src/ElectrodePositions.png)
 
 Taking into account that we can not interpret these signals directly, we calculate differences of signals and receive therefore the used timeseries:
 
