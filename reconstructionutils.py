@@ -72,17 +72,15 @@ class Model:
                 for k in range(self.dimension):
                     y = self.series[k]
                     tmp *= y ** (polynominal_exponents[k][j] + polynominal_exponents[k][i])
-                    tmp *= self.weighting  # weighting function here
-                a[i][j] *= np.sum(tmp)
+                a[i][j] *= np.sum(tmp * self.weighting)  # use weighting function here
 
         b = np.ones((len_polynominal, 1))
         for i in range(len_polynominal):
             tmp = np.ones(np.shape(self.series[0]))
-            tmp *= self.weighting  # weighting function here
             for k in range(self.dimension):
                 y = self.series[k]
                 tmp *= y ** polynominal_exponents[k][i]
-            b[i] *= np.sum(z * tmp)
+            b[i] *= np.sum(z * tmp * self.weighting)  # use weighting function here
 
         return np.linalg.solve(a, b)
 
