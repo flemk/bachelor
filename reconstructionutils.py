@@ -45,7 +45,7 @@ class Model:
 
         if weighting is not None:  # setting weighting function
             assert(len(weighting) == len(series[0]))
-            self.weighting = weighting
+            self.weighting = np.asarray(weighting)
         else:
             # if no weighting function is defined, the weight will be 1:
             # the series stay the same, multiplied by 1.
@@ -72,7 +72,8 @@ class Model:
                 for k in range(self.dimension):
                     y = self.series[k]
                     tmp *= y ** (polynominal_exponents[k][j] + polynominal_exponents[k][i])
-                a[i][j] *= np.sum(tmp * self.weighting)  # use weighting function here
+                tmp *= self.weighting  # DEBUG: weighting here
+                a[i][j] *= np.sum(tmp)
 
         b = np.ones((len_polynominal, 1))
         for i in range(len_polynominal):
@@ -80,8 +81,9 @@ class Model:
             for k in range(self.dimension):
                 y = self.series[k]
                 tmp *= y ** polynominal_exponents[k][i]
-            b[i] *= np.sum(z * tmp * self.weighting)  # use weighting function here
-
+            tmp *= self.weighting  # DEBUG: weighting here
+            b[i] *= np.sum(z * tmp)
+            
         return np.linalg.solve(a, b)
 
     def _convert_fit_coefficients_to_function(self, p):
@@ -145,6 +147,7 @@ class Model:
             T = length
 
         if ivp is None:
+            print('no initial values defined.')
             ivp = []
             for el in self.series:
                 ivp.append(el[0])
