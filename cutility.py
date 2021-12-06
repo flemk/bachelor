@@ -90,7 +90,7 @@ def third_order_upwind(series):
 
     return derivate
 
-def polynominal(dimension, grade):
+def _polynominal(dimension, grade):
     ''' returns the exponents of a polynominal
         of a given dimension to a given grade.
     '''
@@ -111,4 +111,30 @@ def polynominal(dimension, grade):
     # convert to full numpy array
     tmp_ = np.asarray([np.asarray(el) for el in tmp_])
     
-    return np.append(polynominal(dimension, grade - 1), tmp_.T, axis=1)
+    return np.append(_polynominal(dimension, grade - 1), tmp_.T, axis=1)
+
+def polynominal(dimension, grade):
+    if dimension != 3:
+        return _polynominal(dimension, grade)
+    
+    assert(dimension == 3)
+    print('using 3d static')
+
+    if grade == 1:
+        r = [[1., 0., 0.],
+             [0., 1., 0.],
+             [0., 0., 1.]]
+    if grade == 2:  #   v
+        r = [[1., 0., 0., 2., 1., 0., 1., 0., 0.],
+             [0., 1., 0., 0., 1., 2., 0., 1., 0.],
+             [0., 0., 1., 0., 0., 0., 1., 1., 2.]]
+    if grade == 3:  #                           v
+        r = [[1., 0., 0., 2., 1., 0., 1., 0., 0., 3., 2., 2., 1., 1., 1., 0., 0., 0., 0.],
+             [0., 1., 0., 0., 1., 2., 0., 1., 0., 0., 1., 0., 1., 2., 0., 1., 2., 3., 0.],
+             [0., 0., 1., 0., 0., 0., 1., 1., 2., 0., 0., 1., 1., 0., 2., 2., 1., 0., 3.]]
+    if grade == 4:  #                                                                   v
+        r = [[1., 0., 0., 2., 1., 0., 1., 0., 0., 3., 2., 2., 1., 1., 1., 0., 0., 0., 0., 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+             [0., 1., 0., 0., 1., 2., 0., 1., 0., 0., 1., 0., 1., 2., 0., 1., 2., 3., 0., 0, 1, 0, 2, 0, 1, 3, 0, 2, 1, 3, 1, 2, 4, 0],
+             [0., 0., 1., 0., 0., 0., 1., 1., 2., 0., 0., 1., 1., 0., 2., 2., 1., 0., 3., 0, 0, 1, 0, 2, 1, 0, 3, 1, 2, 1, 3, 2, 0, 4]]
+    
+    return np.asarray(r)

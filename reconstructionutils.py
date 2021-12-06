@@ -60,7 +60,7 @@ class Model:
         '''
         parameters:
             - <1d-array> z: target time series to be fitted to
-        '''   
+        '''
         polynominal_exponents = cu.polynominal(self.dimension, self.grade)
     
         len_polynominal = len(polynominal_exponents[0])
