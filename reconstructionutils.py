@@ -45,7 +45,11 @@ class Model:
 
         if weighting is not None:  # setting weighting function
             assert(len(weighting) == len(series[0]))
+<<<<<<< Updated upstream
             self.weighting = np.asarray(weighting)
+=======
+            self.weighting = weighting
+>>>>>>> Stashed changes
         else:
             # if no weighting function is defined, the weight will be 1:
             # the series stay the same, multiplied by 1.
@@ -72,8 +76,12 @@ class Model:
                 for k in range(self.dimension):
                     y = self.series[k]
                     tmp *= y ** (polynominal_exponents[k][j] + polynominal_exponents[k][i])
+<<<<<<< Updated upstream
                 tmp *= self.weighting  # DEBUG: weighting here
                 a[i][j] *= np.sum(tmp)
+=======
+                a[i][j] *= np.sum(tmp * self.weighting)  # use weighting function here
+>>>>>>> Stashed changes
 
         b = np.ones((len_polynominal, 1))
         for i in range(len_polynominal):
@@ -81,9 +89,14 @@ class Model:
             for k in range(self.dimension):
                 y = self.series[k]
                 tmp *= y ** polynominal_exponents[k][i]
+<<<<<<< Updated upstream
             tmp *= self.weighting  # DEBUG: weighting here
             b[i] *= np.sum(z * tmp)
             
+=======
+            b[i] *= np.sum(z * tmp * self.weighting)  # use weighting function here
+
+>>>>>>> Stashed changes
         return np.linalg.solve(a, b)
 
     def _convert_fit_coefficients_to_function(self, p):

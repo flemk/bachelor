@@ -90,7 +90,11 @@ def third_order_upwind(series):
 
     return derivate
 
+<<<<<<< Updated upstream
 def _polynominal(dimension, grade):
+=======
+def polynominal(dimension, grade):
+>>>>>>> Stashed changes
     ''' returns the exponents of a polynominal
         of a given dimension to a given grade.
     '''
